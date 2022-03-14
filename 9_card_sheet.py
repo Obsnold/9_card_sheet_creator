@@ -87,7 +87,10 @@ def export(front_cards,back_cards):
     # save as pdf
     image_list = [back_img]
 
-    front_img.save("./out.pdf", save_all=True, append_images=image_list)
+    out_file = filedialog.asksaveasfile(initialfile='./out.pdf',defaultextension='.pdf', mode='wb' ,initialdir =  "./", title = "Output File", filetypes = (("pdf files","*.pdf"),("all files","*.*")) )
+    front_img.save(out_file, save_all=True, append_images=image_list)
+    
+
 
 if __name__ == "__main__":
     root = TkinterDnD.Tk()
@@ -152,7 +155,7 @@ if __name__ == "__main__":
     ttk.Label(mainframe, text = "BACK").grid(column=3,row=1)
 
     #setup other controls
-    ttk.Button(mainframe, text="Export",command=partial(export,front_cards,back_cards)).grid(column=1,row=0)
+    ttk.Button(mainframe, text="Save PDF",command=partial(export,front_cards,back_cards)).grid(column=1,row=0)
 
     root.wm_title("9 Card Sheet Creator")
     #root.geometry("700x700")
