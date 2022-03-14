@@ -7,6 +7,7 @@ from turtle import width
 from PIL import Image, ImageTk
 import os
 from functools import partial
+from tkinterdnd2 import DND_FILES, TkinterDnD
 
 class Card(object):
     def __init__(self,Frame):
@@ -14,6 +15,8 @@ class Card(object):
         self.frame.grid_propagate(0)
         self.frame.grid_columnconfigure(0, weight=1)
         self.frame.grid_rowconfigure(0, weight=1)
+        self.frame.drop_target_register(DND_FILES)
+        self.frame.dnd_bind('<<Drop>>',self.dnd)
         self.title = ttk.Label(self.frame, text = "",width=13)
         self.img = ttk.Label(self.frame, text = "")
         self.button = ttk.Button(self.frame, text="Browse",command = self.load_image)
@@ -30,6 +33,12 @@ class Card(object):
             self.img.config(image = self.card_image,anchor=CENTER)
             self.title.config(text=os.path.basename(self.filename),anchor=CENTER)
 
+    def dnd(self,e):
+        if e:
+            self.filename = e.data
+            self.card_image = ImageTk.PhotoImage(Image.open(self.filename).resize((100, 140),Image.ANTIALIAS))
+            self.img.config(image = self.card_image,anchor=CENTER)
+            self.title.config(text=os.path.basename(self.filename),anchor=CENTER)
 
     def position(self,col, row):
         self.frame.grid(column=col,row=row)
@@ -81,7 +90,7 @@ def export(front_cards,back_cards):
     front_img.save("./out.pdf", save_all=True, append_images=image_list)
 
 if __name__ == "__main__":
-    root = Tk()
+    root = TkinterDnD.Tk()
     mainframe = ttk.Frame(root, padding="3 3 3 3")
     mainframe.grid(column=0,row=0,sticky=(N,W,E,S))
 
