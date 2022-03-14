@@ -16,29 +16,32 @@ class Card(object):
         self.frame.grid_columnconfigure(0, weight=1)
         self.frame.grid_rowconfigure(0, weight=1)
         self.frame.drop_target_register(DND_FILES)
-        self.frame.dnd_bind('<<Drop>>',self.dnd)
+        self.frame.dnd_bind('<<Drop>>',self.load_image_dnd)
         self.title = ttk.Label(self.frame, text = "",width=13)
         self.img = ttk.Label(self.frame, text = "")
-        self.button = ttk.Button(self.frame, text="Browse",command = self.load_image)
+        self.button = ttk.Button(self.frame, text="Browse",command = self.load_image_button)
 
         self.title.grid(column=0,row=0,sticky=(N))
         self.img.grid(column=0, row=1)
         self.button.grid(column=0,row=2,sticky=(S))
 
-    def load_image(self):
+    def load_image_button(self):
         filename = filedialog.askopenfilename(initialdir =  "./", title = "Select A File", filetypes = (("jpeg files","*.jpg"),("all files","*.*")) )
-        if filename:
-            self.filename = filename
-            self.card_image = ImageTk.PhotoImage(Image.open(self.filename).resize((100, 140),Image.ANTIALIAS))
-            self.img.config(image = self.card_image,anchor=CENTER)
-            self.title.config(text=os.path.basename(self.filename),anchor=CENTER)
+        self.load_image(filename)
 
-    def dnd(self,e):
-        if e:
-            self.filename = e.data
-            self.card_image = ImageTk.PhotoImage(Image.open(self.filename).resize((100, 140),Image.ANTIALIAS))
-            self.img.config(image = self.card_image,anchor=CENTER)
-            self.title.config(text=os.path.basename(self.filename),anchor=CENTER)
+    def load_image_dnd(self,e):
+        self.load_image(e.data)
+    
+    def load_image(self,path):
+         if path:
+            try:
+                self.filename = path
+                self.card_image = ImageTk.PhotoImage(Image.open(self.filename).resize((100, 140),Image.ANTIALIAS))
+                self.img.config(image = self.card_image,anchor=CENTER)
+                self.title.config(text=os.path.basename(self.filename),anchor=CENTER)
+            except:
+                print("could not load image "+str(path))
+
 
     def position(self,col, row):
         self.frame.grid(column=col,row=row)
